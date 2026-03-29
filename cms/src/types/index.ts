@@ -144,3 +144,148 @@ export interface ToggleStickyResponse {
   success: boolean;
   sticky: boolean;
 }
+
+/**
+ * User model
+ */
+export interface User {
+  id: string;
+  username: string;
+  password: string;
+  role: 'admin' | 'user';
+}
+
+/**
+ * Login request
+ */
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+/**
+ * Register request
+ */
+export interface RegisterRequest {
+  username: string;
+  password: string;
+  role?: 'admin' | 'user';
+}
+
+/**
+ * Auth response
+ */
+export interface AuthResponse {
+  success: boolean;
+  token?: string;
+  user?: {
+    id: string;
+    username: string;
+    role: 'admin' | 'user';
+  };
+  error?: string;
+}
+
+/**
+ * Current user response
+ */
+export interface CurrentUserResponse {
+  user: {
+    id: string;
+    username: string;
+    role: 'admin' | 'user';
+  };
+  error?: string;
+}
+
+/**
+ * Media file model
+ */
+export interface MediaFile {
+  id: string;
+  name: string;
+  path: string;
+  size: number;
+  createdAt: string;
+  updatedAt: string;
+  category?: string;
+}
+
+/**
+ * Media list response
+ */
+export interface MediaListResponse {
+  files: MediaFile[];
+  total: number;
+}
+
+/**
+ * Media upload response
+ */
+export interface MediaUploadResponse {
+  success: boolean;
+  file?: MediaFile;
+  error?: string;
+}
+
+/**
+ * Media delete response
+ */
+export interface MediaDeleteResponse {
+  success: boolean;
+  error?: string;
+}
+
+
+/**
+ * Theme config types
+ */
+export interface ThemeConfig {
+  site?: {
+    title?: string;
+    subtitle?: string;
+    author?: string;
+    url?: string;
+    description?: string;
+    keywords?: string[];
+    timezone?: string;
+    startYear?: number;
+    defaultOgImage?: string;
+    backgroundImage?: string;
+  };
+  content?: {
+    addBlankTarget?: boolean;
+    smoothScroll?: boolean;
+    addHeadingLevel?: boolean;
+    enhanceCodeBlock?: boolean;
+    enableCodeCopy?: boolean;
+    enableLinkEmbed?: boolean;
+    previewCacheTime?: number;
+    postCardImagePosition?: 'alternating' | 'left' | 'right';
+  };
+  navigation?: Array<{
+    name?: string;
+    path?: string;
+    icon?: string;
+    children?: Array<{
+      name?: string;
+      path?: string;
+      icon?: string;
+    }>;
+  }>;
+  social?: Record<string, {
+    url?: string;
+    icon?: string;
+    color?: string;
+  }>;
+  comment?: {
+    provider?: 'none' | 'giscus' | 'waline' | 'twikoo' | 'remark42';
+    giscus?: {
+      repo?: string;
+      repoId?: string;
+      category?: string;
+      categoryId?: string;
+    };
+  }>;
+  [key: string]: any;
+}

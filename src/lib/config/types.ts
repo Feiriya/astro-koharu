@@ -524,6 +524,22 @@ export interface DevConfig {
 }
 
 // =============================================================================
+// CMS Configuration
+// =============================================================================
+
+/**
+ * CMS backend management system configuration
+ */
+export interface CmsConfig {
+  /** Whether CMS features are enabled (dev only) */
+  enabled: boolean;
+  /** CMS backend management system access URL */
+  url: string;
+  /** CMS backend management system running port */
+  port: number;
+}
+
+// =============================================================================
 // BGM (Background Music) Configuration
 // =============================================================================
 
@@ -597,6 +613,8 @@ export interface SiteYamlConfig {
   christmas?: ChristmasConfig;
   /** Development tools configuration (dev only) */
   dev?: DevConfig;
+  /** CMS backend management system configuration */
+  cms?: CmsConfig;
   /** Internationalization configuration */
   i18n?: I18nConfig;
 }

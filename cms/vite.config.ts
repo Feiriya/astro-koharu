@@ -13,4 +13,12 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:4322',
+        changeOrigin: true,
+      },
+    },
+  },
 });

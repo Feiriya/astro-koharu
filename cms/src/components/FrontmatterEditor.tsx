@@ -12,6 +12,7 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { type FrontmatterFormData, frontmatterSchema } from '@/lib/schemas';
 import { cn } from '@/lib/utils';
+import { ImagePicker } from '@/components';
 import type { BlogSchema } from '@/types';
 
 export interface FrontmatterEditorRef {
@@ -243,6 +244,7 @@ export const FrontmatterEditor = forwardRef<FrontmatterEditorRef, FrontmatterEdi
   ref,
 ) {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showImagePicker, setShowImagePicker] = useState(false);
 
   const form = useForm<FrontmatterFormData>({
     resolver: zodResolver(frontmatterSchema),
@@ -336,13 +338,32 @@ export const FrontmatterEditor = forwardRef<FrontmatterEditorRef, FrontmatterEdi
 
         <FormField label="Tags" id="tags" placeholder="tag1, tag2, tag3" error={errors.tags?.message} {...register('tags')} />
 
-        <FormField
-          label="Cover Image"
-          id="cover"
-          placeholder="https://example.com/image.jpg"
-          error={errors.cover?.message}
-          {...register('cover')}
-        />
+        <div className="space-y-1">
+          <label htmlFor="cover" className="font-medium text-muted-foreground text-xs">
+            Cover Image
+          </label>
+          <div className="flex gap-2">
+            <input
+              id="cover"
+              placeholder="https://example.com/image.jpg"
+              className={cn(
+                'flex-1 rounded border border-input bg-background px-2 py-1.5 text-sm',
+                'focus:outline-none focus:ring-1 focus:ring-ring',
+                errors.cover?.message && 'border-destructive',
+              )}
+              {...register('cover')}
+            />
+            <button
+              type="button"
+              onClick={() => setShowImagePicker(true)}
+              className="flex size-9 items-center justify-center rounded border border-input bg-muted/30 hover:bg-muted/50"
+              title="从媒体库选择"
+            >
+              <Icon icon="ri:image-line" className="size-5" />
+            </button>
+          </div>
+          {errors.cover?.message && <p className="text-destructive text-xs">{errors.cover?.message}</p>}
+        </div>
 
         <FormField
           label="External Link"
@@ -352,6 +373,18 @@ export const FrontmatterEditor = forwardRef<FrontmatterEditorRef, FrontmatterEdi
           {...register('link')}
         />
       </div>
+
+      {/* Image Picker */}
+      <ImagePicker
+        isOpen={showImagePicker}
+        onClose={() => setShowImagePicker(false)}
+        onSelect={(imageUrl) => {
+          form.setValue('cover', imageUrl);
+          setShowImagePicker(false);
+        }}
+        currentImage={watch('cover')}
+        title="选择封面图片"
+      />
 
       {/* Advanced Options Toggle */}
       <button

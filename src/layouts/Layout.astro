@@ -13,6 +13,7 @@ interface Props {
 
 import { ClientRouter } from 'astro:transitions';
 import AnnouncementProvider from '@components/announcement/AnnouncementProvider.astro';
+import CmsEntry from '@components/CmsEntry';
 import GlobalBGMPlayer from '@components/bgm/GlobalBGMPlayer';
 import ChristmasEffects from '@components/christmas/ChristmasEffects.astro';
 import FloatingGroup from '@components/layout/FloatingGroup';
@@ -359,6 +360,39 @@ const canonicalHref = canonicalOverride ?? Astro.url.href;
       <ImageLightbox client:idle />
       <Toaster client:idle />
       <AnnouncementProvider />
+      <CmsEntry client:only="react" />
+      <!-- Direct CMS Entry Button -->
+      <button
+        type="button"
+        onclick="window.open('http://localhost:4322', '_blank')"
+        style="
+          position: fixed;
+          bottom: 16px;
+          right: 16px;
+          z-index: 9999;
+          padding: 12px 24px;
+          border-radius: 9999px;
+          background-color: #ef4444;
+          color: white;
+          font-weight: bold;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          cursor: pointer;
+          border: none;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 16px;
+        "
+        title="打开 CMS 后台管理系统"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="20" height="8" x="2" y="2" rx="2" ry="2"></rect>
+          <rect width="20" height="8" x="2" y="14" rx="2" ry="2"></rect>
+          <line x1="6" y1="6" x2="6" y2="6"></line>
+          <line x1="6" y1="18" x2="6" y2="18"></line>
+        </svg>
+        CMS
+      </button>
     </div>
   </body>
 </html>

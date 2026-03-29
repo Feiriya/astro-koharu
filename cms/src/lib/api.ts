@@ -18,6 +18,22 @@ import type {
 import { setCategoryMap } from './category';
 
 /**
+ * Get authentication headers for API requests
+ */
+function getAuthHeaders(): HeadersInit {
+  const token = localStorage.getItem('cms-auth-token');
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  return headers;
+}
+
+/**
  * Encode a slug for URL usage
  */
 function encodeSlug(slug: string): string {
@@ -99,7 +115,9 @@ function prepareFrontmatterForApi(frontmatter: BlogSchema): Record<string, unkno
  * @throws Error if the request fails
  */
 export async function readPost(postId: string): Promise<ReadPostResult> {
-  const response = await fetch(`/api/cms/read?postId=${encodeSlug(postId)}`);
+  const response = await fetch(`/api/cms/read?postId=${encodeSlug(postId)}`, {
+    headers: getAuthHeaders(),
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -136,9 +154,7 @@ export async function writePost(
 ): Promise<void> {
   const response = await fetch('/api/cms/write', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify({
       postId,
       frontmatter: prepareFrontmatterForApi(frontmatter),
@@ -172,7 +188,9 @@ export async function listPosts(params?: ListPostsParams): Promise<ListPostsResp
   const queryString = searchParams.toString();
   const url = `/api/cms/list${queryString ? `?${queryString}` : ''}`;
 
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: getAuthHeaders(),
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -191,9 +209,7 @@ export async function listPosts(params?: ListPostsParams): Promise<ListPostsResp
 export async function createPost(params: CreatePostParams): Promise<CreatePostResponse> {
   const response = await fetch('/api/cms/create', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(params),
   });
 
@@ -214,9 +230,7 @@ export async function createPost(params: CreatePostParams): Promise<CreatePostRe
 export async function toggleDraft(postId: string): Promise<ToggleDraftResponse> {
   const response = await fetch('/api/cms/toggle-draft', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify({ postId }),
   });
 
@@ -237,9 +251,7 @@ export async function toggleDraft(postId: string): Promise<ToggleDraftResponse> 
 export async function toggleSticky(postId: string): Promise<ToggleStickyResponse> {
   const response = await fetch('/api/cms/toggle-sticky', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify({ postId }),
   });
 
@@ -274,7 +286,9 @@ export async function getCMSConfig(): Promise<CMSConfigResponse> {
     return cachedConfig;
   }
 
-  const response = await fetch('/api/cms/config');
+  const response = await fetch('/api/cms/config', {
+    headers: getAuthHeaders(),
+  });
 
   if (!response.ok) {
     throw new Error('Failed to fetch CMS config');

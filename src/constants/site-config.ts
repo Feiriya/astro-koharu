@@ -3,6 +3,7 @@
 import type {
   BangumiConfig,
   BgmAudioGroup,
+  CmsConfig,
   CommentConfig,
   DevConfig,
   FeaturedCategory,
@@ -322,6 +323,13 @@ export const devConfig: DevConfig = {
   localProjectPath: yamlConfig.dev?.localProjectPath ?? '',
   contentRelativePath: yamlConfig.dev?.contentRelativePath ?? 'src/content/blog',
   editors: yamlConfig.dev?.editors ?? [],
+};
+
+// Map YAML CMS config with defaults
+export const cmsConfig: CmsConfig = {
+  enabled: yamlConfig.cms?.enabled ?? false,
+  url: yamlConfig.cms?.url ?? 'http://localhost:5173',
+  port: yamlConfig.cms?.port ?? 5173,
 };
 
 // =============================================================================

@@ -18,3 +18,9 @@ export const MAX_CATEGORY_DISPLAY = 10;
 
 /** Maximum recent posts to display in overview */
 export const MAX_RECENT_POSTS_DISPLAY = 5;
+
+/** Users config file path relative to project root */
+export const USERS_PATH = 'config/users.yaml';
+
+/** Upload directory relative to project root */
+export const UPLOAD_DIR = 'public/uploads';

@@ -4,6 +4,7 @@
  * Main entry point for the standalone CMS application.
  */
 
+import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Toaster } from 'sonner';
@@ -12,17 +13,22 @@ import {
   CreatePostDialog,
   DashboardStats,
   ErrorFallback,
+  MediaLibrary,
   PostEditor,
   PostTable,
   RecentUpdates,
+  Auth,
+  ThemeSettings,
+  UserManagement,
 } from '@/components';
 import { Button } from '@/components/ui/button';
-import { type StatusFilter, useDashboardState } from '@/hooks';
+import { type StatusFilter, useAuth, useDashboardState } from '@/hooks';
 import { MAX_CATEGORY_DISPLAY, MAX_RECENT_POSTS_DISPLAY } from '@/lib/paths';
 import { cn } from '@/lib/utils';
 
 // Main App Content
 function AppContent() {
+  const { user, isAuthenticated, isLoading: isAuthLoading, logout } = useAuth();
   const {
     activeTab,
     setActiveTab,
@@ -56,10 +62,25 @@ function AppContent() {
     return <PostEditor postId={editingPostId} onClose={handleEditorClose} onSaved={handleEditorSaved} />;
   }
 
+  // Show loading state while checking auth
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Icon icon="ri:loader-4-line" className="size-12 animate-spin text-muted-foreground" />
+          <p className="text-muted-foreground">正在验证身份...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show auth form if not authenticated
+  if (!isAuthenticated) {
+    return <Auth />;
+  }
+
   return (
     <>
-      <Toaster position="top-right" richColors />
-
       <div className="flex min-h-screen flex-col">
         {/* Header */}
         <header className="border-border border-b bg-card">
@@ -70,16 +91,23 @@ function AppContent() {
               <span className="rounded bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs">DEV</span>
             </div>
             <div className="flex items-center gap-2">
+              <div className="text-sm text-muted-foreground">
+                欢迎, {user?.username}
+              </div>
               <Button variant="outline" size="sm" onClick={fetchData} disabled={isLoading}>
                 <Icon
                   icon={isLoading ? 'ri:loader-4-line' : 'ri:refresh-line'}
                   className={cn('mr-1.5 size-4', isLoading && 'animate-spin')}
                 />
-                Refresh
+                刷新
               </Button>
               <Button size="sm" onClick={() => setIsCreateDialogOpen(true)}>
                 <Icon icon="ri:add-line" className="mr-1.5 size-4" />
-                New Post
+                新建文章
+              </Button>
+              <Button variant="destructive" size="sm" onClick={logout}>
+                <Icon icon="ri:logout-box-line" className="mr-1.5 size-4" />
+                退出登录
               </Button>
             </div>
           </div>
@@ -89,21 +117,28 @@ function AppContent() {
         <div className="border-border border-b bg-card">
           <div className="mx-auto max-w-7xl px-6">
             <div className="flex gap-4">
-              {(['overview', 'posts'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setActiveTab(tab)}
-                  className={cn(
-                    'border-b-2 px-1 py-3 font-medium text-sm capitalize transition-colors',
-                    activeTab === tab
-                      ? 'border-primary text-primary'
-                      : 'border-transparent text-muted-foreground hover:text-foreground',
-                  )}
-                >
-                  {tab}
-                </button>
-              ))}
+              {(['overview', 'posts', 'media', 'theme', 'users'] as const).map((tab) => {
+                // Hide users tab for non-admin users
+                if (tab === 'users' && user?.role !== 'admin') {
+                  return null;
+                }
+                
+                return (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setActiveTab(tab)}
+                    className={cn(
+                      'border-b-2 px-1 py-3 font-medium text-sm capitalize transition-colors',
+                      activeTab === tab
+                        ? 'border-primary text-primary'
+                        : 'border-transparent text-muted-foreground hover:text-foreground',
+                    )}
+                  >
+                    {tab === 'overview' ? '概览' : tab === 'posts' ? '文章' : tab === 'media' ? '媒体' : tab === 'theme' ? '主题' : '用户'}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -152,7 +187,7 @@ function AppContent() {
                         />
                         <input
                           type="text"
-                          placeholder="Search posts..."
+                          placeholder="搜索文章..."
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
                           className="rounded-lg border border-input bg-background py-2 pr-3 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
@@ -168,7 +203,7 @@ function AppContent() {
                           onChange={(e) => setCategory(e.target.value)}
                           className="appearance-none rounded-lg border border-input bg-background py-2 pr-8 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                         >
-                          <option value="">All Categories</option>
+                          <option value="">所有分类</option>
                           {data.categories.map((cat) => (
                             <option key={cat} value={cat}>
                               {cat}
@@ -190,9 +225,9 @@ function AppContent() {
                           onChange={(e) => setStatus(e.target.value as StatusFilter)}
                           className="appearance-none rounded-lg border border-input bg-background py-2 pr-8 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                         >
-                          <option value="all">All Status</option>
-                          <option value="published">Published</option>
-                          <option value="draft">Draft</option>
+                          <option value="all">所有状态</option>
+                          <option value="published">已发布</option>
+                          <option value="draft">草稿</option>
                         </select>
                         <Icon
                           icon="ri:arrow-down-s-line"
@@ -203,7 +238,7 @@ function AppContent() {
 
                     {/* Results Count */}
                     <p className="text-muted-foreground text-sm">
-                      Showing {data.posts.length} of {data.stats.total} posts
+                      显示 {data.posts.length} / {data.stats.total} 篇文章
                     </p>
 
                     {/* Table */}
@@ -218,6 +253,18 @@ function AppContent() {
                       onOpenInEditor={handleOpenInEditor}
                     />
                   </div>
+                )}
+
+                {activeTab === 'media' && (
+                  <MediaLibrary />
+                )}
+
+                {activeTab === 'theme' && (
+                  <ThemeSettings />
+                )}
+
+                {activeTab === 'users' && (
+                  <UserManagement />
                 )}
               </>
             ) : null}
@@ -239,6 +286,7 @@ function AppContent() {
 export function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <Toaster position="top-right" richColors />
       <AppContent />
     </ErrorBoundary>
   );

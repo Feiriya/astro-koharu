@@ -16,3 +16,8 @@ export { MarkdownPreview } from './MarkdownPreview';
 export { PostEditor } from './PostEditor';
 export { PostTable } from './PostTable';
 export { RecentUpdates } from './RecentUpdates';
+export { Auth } from './Auth/Auth';
+export { MediaLibrary } from './Media/MediaLibrary';
+export { ThemeSettings } from './Theme/ThemeSettings';
+export { UserManagement } from './UserManagement/UserManagement';
+export { ImagePicker } from './ImagePicker/ImagePicker';

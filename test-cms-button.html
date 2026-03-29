@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS 入口测试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .cms-button {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      z-index: 9999;
+      padding: 12px 24px;
+      border-radius: 9999px;
+      background-color: #ef4444;
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>CMS 入口测试</h1>
+  <p>如果 CMS 入口按钮正常工作，你应该在页面右下角看到一个红色的 "CMS" 按钮。</p>
+  <button class="cms-button" onclick="window.open('http://localhost:4322', '_blank')">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="20" height="8" x="2" y="2" rx="2" ry="2"></rect>
+      <rect width="20" height="8" x="2" y="14" rx="2" ry="2"></rect>
+      <line x1="6" y1="6" x2="6" y2="6"></line>
+      <line x1="6" y1="18" x2="6" y2="18"></line>
+    </svg>
+    CMS
+  </button>
+</body>
+</html>
